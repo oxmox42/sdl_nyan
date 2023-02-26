@@ -1,0 +1,9 @@
+build*/
+.cache/
+.clangd/
+.cmake/
+CMakeLists.txt.user*
+compile_commands.json
+**/*.swo
+**/*.swp
+.vscode/
