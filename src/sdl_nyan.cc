@@ -76,6 +76,56 @@ static SDL_Texture *make_nyan_texture(SDL_Renderer *renderer, const char dir = '
     return result;
 }
 
+static const float NYAN_PI = 3.14159265358979323846f;
+static const float NYAN_PI2 = 2.0f * NYAN_PI;
+
+template<typename T> T deg2rad(T deg) { return deg * NYAN_PI / 180.0; }
+template<typename T> T rad2deg(T deg) { return 180.0 * deg / NYAN_PI; }
+
+struct NyanSpinnyCircle
+{
+    SDL_Texture *nyanSheet = nullptr;
+    SDL_Point centerPos;
+    float radius = 100.0f;
+    float radiusBounce = 0.0f;
+    float radiusBounceIncrement = 0.4f;
+    float radiusBounceMax = 42.0f;
+    float angle = 0.0f;
+    float angularStep = 0.015f;
+    unsigned animSpeed = 48;
+    unsigned nyanCount = 13;
+};
+
+void do_circle_nyan_step(SDL_Renderer *renderer, NyanSpinnyCircle &nsc)
+{
+    static constexpr SDL_Point rotCenter = {NYAN_SPRITE_WIDTH, NYAN_SPRITE_HEIGHT};
+    const size_t nyanSpriteIndex = (SDL_GetTicks() / nsc.animSpeed) % NYAN_SPRITE_COUNT;
+    const auto sourceRect = nyan_sprite_rect(nyanSpriteIndex);
+    const auto nyanRads = deg2rad(360.0f / nsc.nyanCount);
+
+    for (auto i=0u; i<nsc.nyanCount; ++i)
+    {
+        auto a = nsc.angle + nyanRads * i;
+        auto x = nsc.centerPos.x + std::cos(a) * (nsc.radius + nsc.radiusBounce);
+        auto y = nsc.centerPos.y + std::sin(a) * (nsc.radius + nsc.radiusBounce);
+
+        auto destRect = sourceRect;
+        destRect.x = x;
+        destRect.y = y;
+
+        float rotAngle = rad2deg(a) + 90.0f;
+
+        SDL_RenderCopyEx(renderer, nsc.nyanSheet, &sourceRect, &destRect, rotAngle, &rotCenter, SDL_FLIP_NONE);
+    }
+
+    nsc.angle = nsc.angle + nsc.angularStep;
+    if (nsc.angle >= NYAN_PI2) nsc.angle -= NYAN_PI2;
+
+    nsc.radiusBounce += nsc.radiusBounceIncrement;
+    if (nsc.radiusBounce <= -nsc.radiusBounceMax || nsc.radiusBounce > nsc.radiusBounceMax)
+        nsc.radiusBounceIncrement = - nsc.radiusBounceIncrement;
+}
+
 int main(int argc, char *argv[])
 {
     (void) argc;
@@ -105,6 +155,11 @@ int main(int argc, char *argv[])
         nyan_sdl_fatal("SDL_CreateRenderer");
 
     auto nyanSheet = make_nyan_texture(renderer);
+
+    NyanSpinnyCircle nsc;
+    nsc.nyanSheet = nyanSheet;
+    nsc.centerPos = { 420, 420 };
+
     bool quit = false;
 
     while (!quit)
@@ -143,6 +198,7 @@ int main(int argc, char *argv[])
         double angle = (ticks / 4) % 360;
         SDL_RenderCopyEx(renderer, nyanSheet, &sourceRect, &destRect, angle, &centerPoint, SDL_FLIP_NONE);
 
+        do_circle_nyan_step(renderer, nsc);
 
         SDL_RenderPresent(renderer);
     }
