@@ -47,30 +47,30 @@ static constexpr SDL_Rect nyan_sheet_rect()
     return { 0, 0, NYAN_SPRITE_COUNT * NYAN_SPRITE_WIDTH, NYAN_SPRITE_HEIGHT };
 }
 
-static SDL_Texture *make_nyan_texture(SDL_Renderer *renderer, const char dir = 'r')
+static SDL_Texture *make_nyan_sprite_sheet(SDL_Renderer *renderer, const char dir = 'r')
 {
     static const auto textureRect = nyan_sheet_rect();
     auto result = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
                                     textureRect.w, textureRect.h);
 
     if (!result)
-        nyan_sdl_fatal("make_nyan_texture/SDL_CreateTexture");
+        nyan_sdl_fatal("make_nyan_sprite_sheet/SDL_CreateTexture");
 
     if (SDL_SetTextureBlendMode(result, SDL_BLENDMODE_BLEND))
-        nyan_sdl_fatal("make_nyan_texture/SDL_SetTextureBlendMode");
+        nyan_sdl_fatal("make_nyan_sprite_sheet/SDL_SetTextureBlendMode");
 
     std::array<char, 1024> strBuf;
 
     for (size_t i=0; i<NYAN_SPRITE_COUNT; ++i)
     {
         auto filename = aprintf(strBuf, "%s/%c%zu.png", NYAN_PATH, dir, i+1);
-        log_trace("make_nyan_texture: loading %s", filename);
+        log_trace("make_nyan_sprite_sheet: loading %s", filename);
         int w = 0, h = 0, bytes_per_pixel = 0;
         u8 *data = stbi_load(filename, &w, &h, &bytes_per_pixel, 0);
         assert(w == NYAN_SPRITE_WIDTH && h == NYAN_SPRITE_HEIGHT && bytes_per_pixel == NYAN_BBP);
         auto destRect = nyan_sprite_rect(i);
         if (SDL_UpdateTexture(result, &destRect, data, NYAN_BBP * NYAN_SPRITE_WIDTH))
-            nyan_sdl_fatal("make_nyan_texture/SDL_UpdateTexture");
+            nyan_sdl_fatal("make_nyan_sprite_sheet/SDL_UpdateTexture");
         STBI_FREE(data);
     }
 
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 #endif
 
     const auto windowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL;
-    auto window = SDL_CreateWindow("doompanning", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 960, windowFlags);
+    auto window = SDL_CreateWindow("sdl_nyan", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 960, windowFlags);
     if (!window)
         nyan_sdl_fatal("SDL_CreateWindow");
 
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
     if (!renderer)
         nyan_sdl_fatal("SDL_CreateRenderer");
 
-    auto nyanSheet = make_nyan_texture(renderer);
+    auto nyanSheet = make_nyan_sprite_sheet(renderer);
 
     NyanSpinnyCircle nsc;
     nsc.nyanSheet = nyanSheet;
