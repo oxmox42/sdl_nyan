@@ -71,6 +71,7 @@ static SDL_Texture *make_nyan_texture(SDL_Renderer *renderer, const char dir = '
         auto destRect = nyan_sprite_rect(i);
         if (SDL_UpdateTexture(result, &destRect, data, NYAN_BBP * NYAN_SPRITE_WIDTH))
             nyan_sdl_fatal("make_nyan_texture/SDL_UpdateTexture");
+        STBI_FREE(data);
     }
 
     return result;
