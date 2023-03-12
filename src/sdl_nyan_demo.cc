@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 
     NyanSpinnyCircle nsc;
     nsc.nyanSheet = nyanSheet;
-    nsc.centerPos = { 420, 420 };
+    nsc.centerPos = { 420/2, 420/2 };
 
     bool quit = false;
 
@@ -131,8 +131,8 @@ int main(int argc, char *argv[])
         destRect.y += sheetDestRect.h;
         SDL_RenderCopy(renderer, nyanSheet, &sourceRect, &destRect);
 
-        destRect.x += destRect.w;
-        destRect.y += destRect.h;
+        destRect.x = 420/2;
+        destRect.y = 420/2;
 
         SDL_Point centerPoint = {NYAN_SPRITE_WIDTH, NYAN_SPRITE_HEIGHT};
         double angle = (ticks / 4) % 360;
