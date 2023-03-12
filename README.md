@@ -3,6 +3,8 @@
 Tiny SDL2-based library and demo application for rendering animated nyan cats.
 Rainbows not included, cats only!
 
+![Screenshot of sdl_nyan_demo. Shows individual nyan sprites and some spinning cats.](sdl_nyan_demo.png)
+
 ## Requirements and building
 
 Requires CMake>=3.14, SDL2 and a c11/c++17 capable compiler.
