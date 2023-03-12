@@ -8,8 +8,11 @@ if (NOT WIN32)
 endif()
 target_compile_options(nyan_logc PUBLIC -fmacro-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=. PRIVATE ${SDL_NYAN_WARN_FLAGS})
 
-set(CMAKE_C_CLANG_TIDY clang-tidy -p ${CMAKE_BINARY_DIR} --extra-arg=-std=c11)
-set(CMAKE_CXX_CLANG_TIDY clang-tidy -p ${CMAKE_BINARY_DIR} --extra-arg=-std=c++17)
+find_program(CLANG_TIDY_EXECUTABLE clang-tidy)
+if (CLANG_TIDY_EXECUTABLE)
+    set(CMAKE_C_CLANG_TIDY clang-tidy -p ${CMAKE_BINARY_DIR} --extra-arg=-std=c11)
+    set(CMAKE_CXX_CLANG_TIDY clang-tidy -p ${CMAKE_BINARY_DIR} --extra-arg=-std=c++17)
+endif()
 
 add_library(sdl_nyan STATIC sdl_nyan.cc)
 target_compile_features(sdl_nyan PRIVATE cxx_std_17)
