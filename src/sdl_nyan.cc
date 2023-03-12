@@ -88,13 +88,13 @@ SDL_Texture *make_nyan_sprite_sheet_from_mem(SDL_Renderer *renderer)
 
     for (size_t i=0; data_ptrs[i]; ++i)
     {
-        log_trace("make_nyan_sprite_sheet_from_files: loading data %zu", i);
+        log_trace("make_nyan_sprite_sheet_from_mem: loading data %zu", i);
         int w = 0, h = 0, bytes_per_pixel = 0;
         u8 *data = stbi_load_from_memory(data_ptrs[i], data_sizes[i], &w, &h, &bytes_per_pixel, 0);
         assert(w == NYAN_SPRITE_WIDTH && h == NYAN_SPRITE_HEIGHT && bytes_per_pixel == NYAN_BBP);
         auto destRect = nyan_sprite_rect(i);
         if (SDL_UpdateTexture(result, &destRect, data, NYAN_BBP * NYAN_SPRITE_WIDTH))
-            nyan_sdl_fatal("make_nyan_sprite_sheet_from_files/SDL_UpdateTexture");
+            nyan_sdl_fatal("make_nyan_sprite_sheet_from_mem/SDL_UpdateTexture");
         STBI_FREE(data);
     }
 
