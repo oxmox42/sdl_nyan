@@ -15,7 +15,7 @@ add_library(sdl_nyan STATIC sdl_nyan.cc)
 target_compile_features(sdl_nyan PRIVATE cxx_std_17)
 target_link_libraries(sdl_nyan
     PRIVATE nyan_logc
-    PRIVATE SDL2::SDL2-static
+    PRIVATE SDL2::SDL2
 )
 target_include_directories(sdl_nyan
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -25,7 +25,7 @@ add_executable(sdl_nyan_demo sdl_nyan_demo.cc)
 target_compile_features(sdl_nyan_demo PRIVATE cxx_std_17)
 target_link_libraries(sdl_nyan_demo
     PRIVATE sdl_nyan
-    PRIVATE SDL2::SDL2-static
+    PRIVATE SDL2::SDL2
 )
 
 if (WIN32)
